@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuriStore - Autenticación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .auth-container {
+            max-width: 450px;
+            margin: 2rem auto;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .auth-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+        
+        .auth-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .auth-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .auth-body {
+            padding: 2.5rem 2rem;
+        }
+        
+        .form-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            background: var(--light);
+            color: #64748b;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group i {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 0.875rem;
+            font-weight: 600;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+        
+        .password-toggle {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        /* SweetAlert2 Custom Styles */
+        .swal2-popup {
+            border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .swal2-title {
+            font-weight: 700;
+        }
+        
+        .swal2-confirm {
+            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1><i class="bi bi-headphones"></i> AuriStore</h1>
+                    <p>Tu tienda de audífonos premium</p>
+                </div>
+                
+                <div class="auth-body">
+                    <!-- Tabs -->
+                    <div class="form-tabs">
+                        <button type="button" class="tab-btn active" onclick="switchTab('login', this)">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                        </button>
+                        <button type="button" class="tab-btn" onclick="switchTab('register', this)">
+                            <i class="bi bi-person-plus"></i> Registrarse
+                        </button>
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <div id="loginForm" class="form-section active">
+                        <form onsubmit="handleLogin(event)">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-envelope"></i> Correo Electrónico
+                                </label>
+                                <input type="email" class="form-control" id="loginEmail" 
+                                       placeholder="tu@email.com" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-lock"></i> Contraseña
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="loginPassword" 
+                                           placeholder="••••••••" required>
+                                    <i class="bi bi-eye password-toggle" 
+                                       onclick="togglePassword('loginPassword', this)"></i>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" id="loginBtn">
+                                <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Register Form -->
+                    <div id="registerForm" class="form-section">
+                        <form onsubmit="handleRegister(event)">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-person"></i> Nombre de Usuario
+                                </label>
+                                <input type="text" class="form-control" id="registerUsername" 
+                                       placeholder="Juan Pérez" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-envelope"></i> Correo Electrónico
+                                </label>
+                                <input type="email" class="form-control" id="registerEmail" 
+                                       placeholder="tu@email.com" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-lock"></i> Contraseña
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="registerPassword" 
+                                           placeholder="••••••••" minlength="6" required>
+                                    <i class="bi bi-eye password-toggle" 
+                                       onclick="togglePassword('registerPassword', this)"></i>
+                                </div>
+                                <small class="text-muted">Mínimo 6 caracteres</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-lock-fill"></i> Confirmar Contraseña
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="registerConfirmPassword" 
+                                           placeholder="••••••••" minlength="6" required>
+                                    <i class="bi bi-eye password-toggle" 
+                                       onclick="togglePassword('registerConfirmPassword', this)"></i>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" id="registerBtn">
+                                <i class="bi bi-person-plus"></i> Crear Cuenta
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.all.min.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Verificar después de cargar todo
+        window.addEventListener('load', () => {
+            console.log('Página cargada');
+            console.log('switchTab existe?', typeof switchTab);
+            console.log('Botones encontrados:', document.querySelectorAll('.tab-btn'));
+        });
+    </script>
+</body>
+</html>
